@@ -182,14 +182,13 @@ public class huella extends javax.swing.JApplet {
 //Comprobar la calidad de la muestra de la huella y lo añade a su reclutador si es bueno
     if (conHuella == true ){
         try {
-            System.out.println("Las caracteristicas de la huella han sido creadas");
-            Reclutador.addFeatures(featuresInscripcion); // Agregar las caracteristicas de la huella a la plantilla a crear
-            
+        // System.out.println("Las caracteristicas de la huella han sido creadas");
+        Image image = CrearImagenHuella(sample);
          // Dibuja la huella dactilar capturada
-         Image image = CrearImagenHuella(sample);
-         DibujarHuella(image);
-         conHuella = false;
-         
+        DibujarHuella(image);
+        
+        Reclutador.addFeatures(featuresInscripcion); // Agregar las caracteristicas de la huella a la plantilla a crear
+        conHuella = false;       
        // btnVerificar.setEnabled(true);
        // btnIdentificar.setEnabled(true);
             
@@ -197,7 +196,7 @@ public class huella extends javax.swing.JApplet {
             System.err.println();
             
         } finally {
-            EstadoHuellas();
+        // EstadoHuellas();
         //Comprueba si la plantilla se ha creado.
             switch (Reclutador.getTemplateStatus()){
                 case TEMPLATE_STATUS_READY: // informe de exito y detiene la captura de huellas
@@ -213,7 +212,7 @@ public class huella extends javax.swing.JApplet {
                 case TEMPLATE_STATUS_FAILED: // informe de fallas y reiniciar la captura de huellas
                     Reclutador.clear();
                     stop();
-                    EstadoHuellas();
+                   // EstadoHuellas();
                     setTemplate(null);
                     start();
                     break;               
@@ -260,11 +259,11 @@ public class huella extends javax.swing.JApplet {
     
     //******
     
-    public void EstadoHuellas() {
-        
-        //EnviarTexto("Muestra de huellas necesarias para guardar template" + Reclutador.getFeaturesNeeded());
-        EnviarTexto("Muestra de huellas Guardadas en el sistema");
-    }
+//    public void EstadoHuellas() {
+//        
+//        //EnviarTexto("Muestra de huellas necesarias para guardar template" + Reclutador.getFeaturesNeeded());
+//        EnviarTexto("Muestra de huellas Guardadas en el sistema");
+//    }
     
     public void EnviarTexto(String string){
         txtSalida.append(string + "\n");
