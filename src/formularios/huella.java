@@ -41,9 +41,8 @@ public class huella extends javax.swing.JApplet {
      * Initializes the applet huella
      */
     @Override
-    public void init() {
+    public void init() {      
         
-        Iniciar();
         
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
@@ -92,8 +91,82 @@ public class huella extends javax.swing.JApplet {
     
     // Funcion que inicia todos los eventos del lector
     
-    protected void Iniciar ()  {                   
+    protected void IniciarDerecha ()  {                   
         //Metodo para saber si el Sensor esta Activado o Conectado   
+        EnviarTexto("Inicia captura indice Derecho");
+        Lector.addReaderStatusListener(new DPFPReaderStatusAdapter() {
+            @Override
+            public void readerConnected(final DPFPReaderStatusEvent e) {
+                SwingUtilities.invokeLater(new Runnable(){
+                    public void run() {
+                        EnviarTexto ("Sensor de huella esta activado o conectado");
+                        }
+                });
+                
+            }            
+        //Metodo para saber si el Sensor esta Desactivado o Desconectado      
+            @Override
+            public void readerDisconnected(final DPFPReaderStatusEvent e) {
+                SwingUtilities.invokeLater(new Runnable(){
+                    public void run() {
+                        EnviarTexto ("Sensor de huella esta desactivdo o desconectado");
+                    }
+                });
+            
+            System.runFinalization();}        
+        });         
+        //Metodo que se ejecuta cuando el dedo es colocado sobre el lector
+        Lector.addSensorListener(new DPFPSensorAdapter() {
+            @Override
+            public void fingerTouched(final DPFPSensorEvent e) {
+                SwingUtilities.invokeLater(() -> {
+                    EnviarTexto("El dedo derecho ha sido colocado sobre el lector de huellas");
+                    conHuella = true ;
+                });
+        }
+            
+        @Override
+        public void fingerGone(final DPFPSensorEvent e) {
+            SwingUtilities.invokeLater(() -> {
+                EnviarTexto("El dedo derecho ha sido quitado sobre el lector de huellas");
+
+                conHuella = false ;
+            });
+        }
+        });
+        
+        //Cualquier error que nos da, este metodo lo captura
+        Lector.addErrorListener(new DPFPErrorAdapter () {
+            public void errorReader(final DPFPErrorEvent e) {
+                SwingUtilities.invokeLater(new Runnable () {
+                    public void run() {
+                        EnviarTexto( "Error: " + e.getError());
+                    }
+                });
+            }
+        });
+        //Metodo para saber si la huella ha sido Capturada
+        Lector.addDataListener(new DPFPDataAdapter() { 
+            @Override
+            public void dataAcquired(final DPFPDataEvent e) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run () {
+                        EnviarTexto("Huella Derecha capturada");
+                        ProcesarCapturaDer(e.getSample());
+                    }
+                });                
+            }            
+        }); 
+        
+        System.runFinalization();
+        
+    }      
+    
+    
+    protected void IniciarIzquierda ()  {                   
+        //Metodo para saber si el Sensor esta Activado o Conectado   
+        
+        EnviarTexto("Inicia captura indice Izquierdo");
         
         Lector.addReaderStatusListener(new DPFPReaderStatusAdapter() {
             @Override
@@ -119,7 +192,7 @@ public class huella extends javax.swing.JApplet {
             @Override
             public void fingerTouched(final DPFPSensorEvent e) {
                 SwingUtilities.invokeLater(() -> {
-                    EnviarTexto("El dedo ha sido colocado sobre el lector de huellas");
+                    EnviarTexto("El dedo izquierdo ha sido colocado sobre el lector de huellas");
                     conHuella = true ;
                 });
         }
@@ -127,7 +200,7 @@ public class huella extends javax.swing.JApplet {
         @Override
         public void fingerGone(final DPFPSensorEvent e) {
             SwingUtilities.invokeLater(() -> {
-                EnviarTexto("El dedo ha sido quitado sobre el lector de huellas");
+                EnviarTexto("El dedo izquierdo ha sido quitado sobre el lector de huellas");
 
                 conHuella = false ;
             });
@@ -150,13 +223,15 @@ public class huella extends javax.swing.JApplet {
             public void dataAcquired(final DPFPDataEvent e) {
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run () {
-                        EnviarTexto("Huella Capturada");
-                        ProcesarCaptura(e.getSample());
+                        EnviarTexto("Huella Izquierda capturada");
+                        ProcesarCapturaIzq(e.getSample());
                     }
                 });                
             }            
         }); 
-    }        
+       
+        System.runFinalization();
+    }    
     //funcion que obtiene las cracteristicas de la huella
     public DPFPFeatureSet extraerCaracteristicas(DPFPSample sample, DPFPDataPurpose purpose) {
         
@@ -169,30 +244,55 @@ public class huella extends javax.swing.JApplet {
         }        
     }
     
-    public void ProcesarCaptura(DPFPSample sample){
+    
+    
+    public void ProcesarCapturaDer(DPFPSample sample){
 
     if (conHuella == true ){        
         // System.out.println("Las caracteristicas de la huella han sido creadas");
-        Image image = CrearImagenHuella(sample);
-         // Dibuja la huella dactilar capturada
-        DibujarHuella(image);
+        Image imageDerecha = CrearImagenHuellaD(sample);
+          // Dibuja la huella dactilar capturada
+        DibujarHuellaDer(imageDerecha);
         conHuella = false; 
               
         }   
     }
     
-    public Image CrearImagenHuella(DPFPSample sample){
+  
+    
+    
+    public void ProcesarCapturaIzq(DPFPSample sample){
+
+    if (conHuella == true ){        
+        // System.out.println("Las caracteristicas de la huella han sido creadas");
+        Image imageIzquierda = CrearImagenHuellaI(sample);
+         // Dibuja la huella dactilar capturada
+        DibujarHuellaIzq(imageIzquierda);
+        conHuella = false; 
+              
+        }   
+    }
+    
+    public Image CrearImagenHuellaD(DPFPSample sample){
         
         return DPFPGlobal.getSampleConversionFactory().createImage(sample);
         
     }
+    
+    public Image CrearImagenHuellaI(DPFPSample sample){
+
+    return DPFPGlobal.getSampleConversionFactory().createImage(sample);
+
+    }
+    
+    
     ///*** capturar imagen de la huella 
     
     
-    public void DibujarHuella (Image image) {
+    public void DibujarHuellaDer (Image imageDerecha) {
         
         lblImagenHuella.setIcon(new ImageIcon(
-                        image.getScaledInstance(lblImagenHuella.getWidth(), lblImagenHuella.getHeight(), Image.SCALE_DEFAULT)));
+                        imageDerecha.getScaledInstance(lblImagenHuella.getWidth(), lblImagenHuella.getHeight(), Image.SCALE_DEFAULT)));
         repaint(); 
         // mirar icon desde el label
         ImageIcon icon = (ImageIcon) lblImagenHuella.getIcon();
@@ -205,7 +305,7 @@ public class huella extends javax.swing.JApplet {
         //Ruta donde guardara la imagen        
         // File file = new File ("C:\\Users\\cesar.ramirez\\Documents\\pruebasArchivos\\huella.jpg");
       
-        File file = new File ("C:\\pruebaArch\\huella.jpg");     
+        File file = new File ("C:\\CiaSci\\indice derecho.jpg");     
         
         //********************************
         try {
@@ -218,7 +318,39 @@ public class huella extends javax.swing.JApplet {
 		}
         
     }   
-  
+    
+    public void DibujarHuellaIzq (Image imageIzquierda) {
+        
+        lblImagenHuella.setIcon(new ImageIcon(
+                        imageIzquierda.getScaledInstance(lblImagenHuella.getWidth(), lblImagenHuella.getHeight(), Image.SCALE_DEFAULT)));
+        repaint(); 
+        // mirar icon desde el label
+        ImageIcon icon = (ImageIcon) lblImagenHuella.getIcon();
+        //copiar imagen
+        BufferedImage huella = new BufferedImage(icon.getIconWidth(),icon.getIconHeight(), BufferedImage.TYPE_INT_RGB);
+        Graphics2D g2 = huella.createGraphics();
+        g2.drawImage(icon.getImage(), 0, 0, icon.getImageObserver());
+        g2.dispose();       
+        
+        //Ruta donde guardara la imagen        
+        // File file = new File ("C:\\Users\\cesar.ramirez\\Documents\\pruebasArchivos\\huella.jpg");
+      
+        File file = new File ("C:\\CiaSci\\indice izquierdo.jpg");     
+        
+        //********************************
+        try {
+	                
+                ImageIO.write( huella , "jpg", file );
+	
+        } catch (IOException e) {
+	
+            System.out.println("Error de escritura");
+		}
+        
+    }
+      
+    //******************
+    
     public void EnviarTexto(String string){
         txtSalida.append(string + "\n");
        
@@ -249,6 +381,10 @@ public class huella extends javax.swing.JApplet {
         firePropertyChange(TEMPLATE_PROPERTY, old, template);
         
     }
+    	public void salir()
+	{
+		System.exit(0);
+	}
     
     /**
      * This method is called from within the init() method to initialize the
@@ -266,7 +402,8 @@ public class huella extends javax.swing.JApplet {
         jScrollPane1 = new javax.swing.JScrollPane();
         txtSalida = new javax.swing.JTextArea();
         pnlAcciones = new javax.swing.JPanel();
-        btnSalir = new javax.swing.JButton();
+        btnDedoDerecho = new javax.swing.JButton();
+        btnDedoIzquierdo = new javax.swing.JButton();
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -303,10 +440,17 @@ public class huella extends javax.swing.JApplet {
 
         pnlAcciones.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Acciones", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
 
-        btnSalir.setText("Salir");
-        btnSalir.addActionListener(new java.awt.event.ActionListener() {
+        btnDedoDerecho.setText("Indice derecho");
+        btnDedoDerecho.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnSalirActionPerformed(evt);
+                btnDedoDerechoActionPerformed(evt);
+            }
+        });
+
+        btnDedoIzquierdo.setText("Indice Izquierdo");
+        btnDedoIzquierdo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDedoIzquierdoActionPerformed(evt);
             }
         });
 
@@ -314,17 +458,21 @@ public class huella extends javax.swing.JApplet {
         pnlAcciones.setLayout(pnlAccionesLayout);
         pnlAccionesLayout.setHorizontalGroup(
             pnlAccionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlAccionesLayout.createSequentialGroup()
-                .addContainerGap(121, Short.MAX_VALUE)
-                .addComponent(btnSalir, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(112, 112, 112))
+            .addGroup(pnlAccionesLayout.createSequentialGroup()
+                .addGap(24, 24, 24)
+                .addComponent(btnDedoDerecho, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(38, 38, 38)
+                .addComponent(btnDedoIzquierdo, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         pnlAccionesLayout.setVerticalGroup(
             pnlAccionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlAccionesLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(btnSalir)
-                .addContainerGap())
+            .addGroup(pnlAccionesLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(pnlAccionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnDedoDerecho)
+                    .addComponent(btnDedoIzquierdo))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout pnlSalidaLayout = new javax.swing.GroupLayout(pnlSalida);
@@ -333,7 +481,7 @@ public class huella extends javax.swing.JApplet {
             pnlSalidaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlSalidaLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 316, Short.MAX_VALUE)
                 .addContainerGap())
             .addComponent(pnlAcciones, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
@@ -368,13 +516,22 @@ public class huella extends javax.swing.JApplet {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalirActionPerformed
-        System.exit(0);
-    }//GEN-LAST:event_btnSalirActionPerformed
+    private void btnDedoDerechoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDedoDerechoActionPerformed
+        txtSalida.setText("");
+        IniciarDerecha();  
+        System.runFinalization();
+    }//GEN-LAST:event_btnDedoDerechoActionPerformed
+
+    private void btnDedoIzquierdoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDedoIzquierdoActionPerformed
+        txtSalida.setText(""); 
+        IniciarIzquierda();         
+         System.runFinalization();
+    }//GEN-LAST:event_btnDedoIzquierdoActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnSalir;
+    private javax.swing.JButton btnDedoDerecho;
+    private javax.swing.JButton btnDedoIzquierdo;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lblImagenHuella;
