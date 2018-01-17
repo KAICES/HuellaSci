@@ -92,7 +92,11 @@ public class huella extends javax.swing.JApplet {
     // Funcion que inicia todos los eventos del lector
     
     protected void IniciarDerecha ()  {                   
-        //Metodo para saber si el Sensor esta Activado o Conectado   
+        //Metodo para saber si el Sensor esta Activado o Conectado  
+        if(Lector.isStarted() == false){
+            start();
+        }
+        
         EnviarTexto("Inicia captura indice Derecho");
         Lector.addReaderStatusListener(new DPFPReaderStatusAdapter() {
             @Override
@@ -153,6 +157,7 @@ public class huella extends javax.swing.JApplet {
                     public void run () {
                         EnviarTexto("Huella Derecha capturada");
                         ProcesarCapturaDer(e.getSample());
+                        stop();
                     }
                 });                
             }            
@@ -164,7 +169,10 @@ public class huella extends javax.swing.JApplet {
     
     
     protected void IniciarIzquierda ()  {                   
-        //Metodo para saber si el Sensor esta Activado o Conectado   
+        //Metodo para saber si el Sensor esta Activado o Conectado           
+        if(Lector.isStarted() == false){
+            start();
+        }
         
         EnviarTexto("Inicia captura indice Izquierdo");
         
@@ -225,6 +233,7 @@ public class huella extends javax.swing.JApplet {
                     public void run () {
                         EnviarTexto("Huella Izquierda capturada");
                         ProcesarCapturaIzq(e.getSample());
+                        stop();
                     }
                 });                
             }            
@@ -321,11 +330,11 @@ public class huella extends javax.swing.JApplet {
     
     public void DibujarHuellaIzq (Image imageIzquierda) {
         
-        lblImagenHuella.setIcon(new ImageIcon(
-                        imageIzquierda.getScaledInstance(lblImagenHuella.getWidth(), lblImagenHuella.getHeight(), Image.SCALE_DEFAULT)));
+        lblImagenHuella1.setIcon(new ImageIcon(
+                        imageIzquierda.getScaledInstance(lblImagenHuella1.getWidth(), lblImagenHuella1.getHeight(), Image.SCALE_DEFAULT)));
         repaint(); 
         // mirar icon desde el label
-        ImageIcon icon = (ImageIcon) lblImagenHuella.getIcon();
+        ImageIcon icon = (ImageIcon) lblImagenHuella1.getIcon();
         //copiar imagen
         BufferedImage huella = new BufferedImage(icon.getIconWidth(),icon.getIconHeight(), BufferedImage.TYPE_INT_RGB);
         Graphics2D g2 = huella.createGraphics();
@@ -364,7 +373,7 @@ public class huella extends javax.swing.JApplet {
     
     public void stop() {
         
-         Lector.startCapture();
+         Lector.stopCapture();
          EnviarTexto("No se esta utilizando el lector de huellas dactilar");
     }
     
@@ -398,6 +407,7 @@ public class huella extends javax.swing.JApplet {
         jPanel1 = new javax.swing.JPanel();
         pnlHuella = new javax.swing.JPanel();
         lblImagenHuella = new javax.swing.JLabel();
+        lblImagenHuella1 = new javax.swing.JLabel();
         pnlSalida = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         txtSalida = new javax.swing.JTextArea();
@@ -425,17 +435,26 @@ public class huella extends javax.swing.JApplet {
             .addGroup(pnlHuellaLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(lblImagenHuella, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addComponent(lblImagenHuella1, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
         pnlHuellaLayout.setVerticalGroup(
             pnlHuellaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlHuellaLayout.createSequentialGroup()
-                .addComponent(lblImagenHuella, javax.swing.GroupLayout.DEFAULT_SIZE, 187, Short.MAX_VALUE)
+                .addGroup(pnlHuellaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lblImagenHuella, javax.swing.GroupLayout.DEFAULT_SIZE, 187, Short.MAX_VALUE)
+                    .addComponent(lblImagenHuella1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
         txtSalida.setColumns(20);
+        txtSalida.setForeground(new java.awt.Color(240, 240, 240));
         txtSalida.setRows(5);
+        txtSalida.setUI(null);
+        txtSalida.setAlignmentX(0.0F);
+        txtSalida.setAlignmentY(0.0F);
+        txtSalida.setMargin(new java.awt.Insets(0, 0, 0, 0));
         jScrollPane1.setViewportView(txtSalida);
 
         pnlAcciones.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Acciones", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
@@ -459,49 +478,45 @@ public class huella extends javax.swing.JApplet {
         pnlAccionesLayout.setHorizontalGroup(
             pnlAccionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlAccionesLayout.createSequentialGroup()
-                .addGap(24, 24, 24)
+                .addGap(26, 26, 26)
                 .addComponent(btnDedoDerecho, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(38, 38, 38)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 44, Short.MAX_VALUE)
                 .addComponent(btnDedoIzquierdo, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(20, 20, 20))
         );
         pnlAccionesLayout.setVerticalGroup(
             pnlAccionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlAccionesLayout.createSequentialGroup()
-                .addContainerGap()
                 .addGroup(pnlAccionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnDedoDerecho)
                     .addComponent(btnDedoIzquierdo))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(0, 10, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout pnlSalidaLayout = new javax.swing.GroupLayout(pnlSalida);
         pnlSalida.setLayout(pnlSalidaLayout);
         pnlSalidaLayout.setHorizontalGroup(
             pnlSalidaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(pnlSalidaLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 316, Short.MAX_VALUE)
-                .addContainerGap())
             .addComponent(pnlAcciones, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jScrollPane1)
         );
         pnlSalidaLayout.setVerticalGroup(
             pnlSalidaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlSalidaLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(pnlAcciones, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(pnlSalida, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(pnlHuella, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
@@ -511,8 +526,9 @@ public class huella extends javax.swing.JApplet {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(pnlHuella, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(pnlSalida, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(pnlSalida, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -535,6 +551,7 @@ public class huella extends javax.swing.JApplet {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lblImagenHuella;
+    private javax.swing.JLabel lblImagenHuella1;
     private javax.swing.JPanel pnlAcciones;
     private javax.swing.JPanel pnlHuella;
     private javax.swing.JPanel pnlSalida;
